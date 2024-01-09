@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MainPage());
+void main() => runApp(MyApp());
 
-class MyApp2 extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,37 +67,13 @@ class _LoginPageState extends State<LoginPage> {
                     print('Email: ${_emailController.text}');
                     print('Password: ${_passwordController.text}');
                   }
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SecondRoute()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MainPage()));
                 },
                 child: Text('Login'),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class SecondRoute extends StatelessWidget {
-  const SecondRoute({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Second Route'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            // Navigate back to first route when tapped.
-          },
-          child: const Text('Go back!'),
         ),
       ),
     );
@@ -110,12 +86,15 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: Text('main page'),
+          backgroundColor: Color.fromARGB(255, 60, 144, 190),
+          leading: IconButton(
+              onPressed: () => {Navigator.pop(context)},
+              icon: Icon(Icons.arrow_back_ios_new)),
+        ),
         body: CustomScrollView(
           slivers: [
-            const SliverAppBar(
-              title: Text('scoller'),
-              floating: true,
-            ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) =>
