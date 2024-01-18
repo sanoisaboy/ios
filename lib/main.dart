@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 void main() => runApp(MyApp());
 
@@ -67,8 +68,10 @@ class _LoginPageState extends State<LoginPage> {
                     print('Email: ${_emailController.text}');
                     print('Password: ${_passwordController.text}');
                   }
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MainPage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CountdownTimerPage()));
                 },
                 child: Text('Login'),
               ),
@@ -105,6 +108,114 @@ class MainPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class CountdownTimerPage extends StatefulWidget {
+  @override
+  _CountdownTimerPageState createState() => _CountdownTimerPageState();
+}
+
+class _CountdownTimerPageState extends State<CountdownTimerPage> {
+  Timer? _timer;
+  int _remainingSeconds;
+  int _remainingMinutes;
+  Timer? _callTimer;
+
+  _CountdownTimerPageState({int startSeconds = 3})
+      : _remainingSeconds = startSeconds,
+        _remainingMinutes = 00;
+
+  void _startCountdown() {
+    const oneSecond = Duration(seconds: 1);
+    _timer = Timer.periodic(oneSecond, (Timer timer) {
+      if (_remainingSeconds <= 0) {
+        setState(() {
+          if (_remainingMinutes <= 0) {
+            _showDialogExample(context, timer);
+            _startCallTimer();
+            //timer.cancel();
+          } else {
+            _remainingMinutes--;
+            _remainingSeconds = 59;
+          }
+        });
+      } else {
+        setState(() {
+          _remainingSeconds--;
+        });
+      }
+    });
+  }
+
+  void _addTime() {
+    setState(() {
+      // Add desired amount of time when OK is pressed (e.g., 5 seconds)
+      _remainingSeconds += 5;
+    });
+  }
+
+  void _startCallTimer() {
+    const fiveMinute = Duration(seconds: 5); //改五分鐘
+    _callTimer = Timer.periodic(fiveMinute, (Timer callTimer) {});
+  }
+
+  //通知？？
+  void _showDialogExample(BuildContext context, Timer timer) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('time up'),
+        content: const Text('Do you want to add time?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {
+              _addTime(),
+              Navigator.pop(context, 'YES'),
+            },
+            child: const Text('YES'),
+          ),
+          TextButton(
+            onPressed: () => {
+              timer.cancel(),
+              Navigator.pop(context, 'Cancel'),
+            },
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Simple Countdown Timer')),
+      body: Center(
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(
+            Icons.timer,
+            size: 50,
+            color: Colors.blue,
+          ),
+          Text(
+            '$_remainingMinutes' + ':' + '$_remainingSeconds',
+            style: TextStyle(fontSize: 48),
+          ),
+        ]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _startCountdown,
+        tooltip: 'Start Countdown',
+        child: Icon(Icons.timer),
       ),
     );
   }
