@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() => runApp(MyApp());
 
@@ -123,20 +124,27 @@ class _CountdownTimerPageState extends State<CountdownTimerPage> {
   int _remainingSeconds;
   int _remainingMinutes;
   Timer? _callTimer;
+  AudioPlayer audioPlayer = AudioPlayer();
+  String audioUrl = "audio/test.mp3";
 
   _CountdownTimerPageState({int startSeconds = 3})
       : _remainingSeconds = startSeconds,
         _remainingMinutes = 00;
 
   void _startCountdown() {
+    _restartTimer();
+  }
+
+  void _restartTimer() {
+    _timer?.cancel(); // Cancel the current timer if it's running
     const oneSecond = Duration(seconds: 1);
     _timer = Timer.periodic(oneSecond, (Timer timer) {
       if (_remainingSeconds <= 0) {
         setState(() {
           if (_remainingMinutes <= 0) {
-            _showDialogExample(context, timer);
+            _showDialogExample(context);
             _startCallTimer();
-            //timer.cancel();
+            timer.cancel();
           } else {
             _remainingMinutes--;
             _remainingSeconds = 59;
@@ -159,11 +167,18 @@ class _CountdownTimerPageState extends State<CountdownTimerPage> {
 
   void _startCallTimer() {
     const fiveMinute = Duration(seconds: 5); //改五分鐘
-    _callTimer = Timer.periodic(fiveMinute, (Timer callTimer) {});
+    _callTimer = Timer.periodic(fiveMinute, (Timer callTimer) {
+      //_showDialogExample(context);
+    });
+  }
+
+  void play() async {
+    //await audioPlayer.setAsset('assets/audio/sample.mp3');
+    //await audioPlayer.play(AssetSource("audio/test.mp3"));
   }
 
   //通知？？
-  void _showDialogExample(BuildContext context, Timer timer) {
+  void _showDialogExample(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -173,13 +188,13 @@ class _CountdownTimerPageState extends State<CountdownTimerPage> {
           TextButton(
             onPressed: () => {
               _addTime(),
+              _restartTimer(),
               Navigator.pop(context, 'YES'),
             },
             child: const Text('YES'),
           ),
           TextButton(
             onPressed: () => {
-              timer.cancel(),
               Navigator.pop(context, 'Cancel'),
             },
             child: const Text('Cancel'),
